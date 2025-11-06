@@ -1,0 +1,36 @@
+{
+	"name": "open-api-express-wrapper",
+	"author": "devmuggs",
+	"version": "0.0.1",
+	"description": "Lightweight wrapper around Express that integrates Zod schemas with OpenAPI generation.",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"lint": "eslint . --ext .ts",
+		"format": "prettier --write .",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [
+		"express",
+		"openapi",
+		"zod",
+		"typescript",
+		"api",
+		"wrapper"
+	],
+	"license": "MIT",
+	"type": "module",
+	"devDependencies": {
+		"@types/express": "^5.0.5",
+		"@types/node": "^24.10.0",
+		"eslint": "^9.39.1",
+		"prettier": "^3.6.2",
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"express": "^5.1.0",
+		"zod": "^4.1.12",
+		"zod-openapi": "^5.4.3"
+	}
+}
