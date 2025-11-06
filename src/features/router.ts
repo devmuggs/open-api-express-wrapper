@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { createDocument } from "zod-openapi";
+import { Router as expressRouter } from "express";
+import type { HttpMethod } from "../core/http-method.js";
 import { RouteImpl } from "./route.js";
 
 export interface RouterOptions {
@@ -11,6 +12,7 @@ export interface RouterOptions {
 
 export class RouterImpl {
 	private static allRouters: RouterImpl[] = []; // <- keep track of all router instances for openapi generation
+	private router: expressRouter = expressRouter();
 
 	basePath: string;
 	middleware: Array<(req: Request, res: Response, next: NextFunction) => void>;
@@ -24,6 +26,10 @@ export class RouterImpl {
 		this.subRouters = options.subRouters || [];
 
 		RouterImpl.allRouters.push(this);
+	}
+
+	public registerRoutes(app: { use: (path: string, router: expressRouter) => void }) {
+		app.use(this.basePath, this.router);
 	}
 
 	public static buildOpenApiSpec() {}

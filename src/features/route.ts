@@ -1,13 +1,12 @@
-import { RouteHandlerImpl } from "./router-handler.js";
-import { HttpMethod } from "./types.js";
+import { HandlerImpl, HttpMethod } from "../index.js";
 
 export interface RouteOptions {
-	handlers: Partial<Record<HttpMethod, RouteHandlerImpl<any, any>>>;
+	handlers: Partial<Record<HttpMethod, HandlerImpl<any, any>>>;
 }
 
 export class RouteImpl {
 	path: string;
-	handlers: Partial<Record<HttpMethod, RouteHandlerImpl<any, any>>>;
+	handlers: Partial<Record<HttpMethod, HandlerImpl<any, any>>>;
 
 	constructor(path: string, options: RouteOptions) {
 		this.path = path;

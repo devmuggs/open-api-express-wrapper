@@ -1,10 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import z from "zod";
 
-import { I18n } from "./i18n.js";
-import { HttpStatusCode, RequestDataLocation } from "./types.js";
+import { I18n } from "../core/i18n.js";
+import { HttpStatusCode, RequestDataLocation } from "../index.js";
 
-export interface RouteHandlerOptions<
+export interface HandlerOptions<
 	TRequestSpecification extends Partial<Record<RequestDataLocation, z.ZodType>>,
 	TResponseSpecification extends Partial<
 		Record<HttpStatusCode, { description: I18n; schema?: z.ZodType }>
@@ -15,7 +15,8 @@ export interface RouteHandlerOptions<
 	middleware: Array<(params: { req: Request; res: Response; next: NextFunction }) => void>;
 	handler: (
 		req: Request,
-		res: Response
+		res: Response,
+		next: NextFunction
 	) => Promise<
 		{
 			[TStatus in keyof TResponseSpecification]: TResponseSpecification[TStatus] extends {
@@ -36,21 +37,21 @@ export interface RouteHandlerOptions<
 	responses: TResponseSpecification;
 }
 
-export class RouteHandlerImpl<
+export class HandlerImpl<
 	TRequestSpecification extends Partial<Record<RequestDataLocation, z.ZodType>>,
 	TResponseSpecification extends Partial<
 		Record<HttpStatusCode, { description: I18n; schema?: z.ZodType }>
 	>
-> implements RouteHandlerOptions<TRequestSpecification, TResponseSpecification>
+> implements HandlerOptions<TRequestSpecification, TResponseSpecification>
 {
 	summary: I18n;
 	description: I18n;
-	middleware: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>["middleware"];
-	handler: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>["handler"];
-	request: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>["request"];
-	responses: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>["responses"];
+	middleware: HandlerOptions<TRequestSpecification, TResponseSpecification>["middleware"];
+	handler: HandlerOptions<TRequestSpecification, TResponseSpecification>["handler"];
+	request: HandlerOptions<TRequestSpecification, TResponseSpecification>["request"];
+	responses: HandlerOptions<TRequestSpecification, TResponseSpecification>["responses"];
 
-	constructor(options: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>) {
+	constructor(options: HandlerOptions<TRequestSpecification, TResponseSpecification>) {
 		this.summary = options.summary;
 		this.description = options.description;
 		this.middleware = options.middleware;
@@ -60,7 +61,7 @@ export class RouteHandlerImpl<
 	}
 }
 
-export const RouteHandler = <
+export const Handler = <
 	TRequestSpecification extends Partial<
 		Record<"query" | "body" | "params" | "headers", z.ZodType>
 	>,
@@ -68,7 +69,7 @@ export const RouteHandler = <
 		Record<HttpStatusCode, { description: I18n; schema?: z.ZodType }>
 	>
 >(
-	options: RouteHandlerOptions<TRequestSpecification, TResponseSpecification>
-): RouteHandlerImpl<TRequestSpecification, TResponseSpecification> => {
-	return new RouteHandlerImpl(options);
+	options: HandlerOptions<TRequestSpecification, TResponseSpecification>
+): HandlerImpl<TRequestSpecification, TResponseSpecification> => {
+	return new HandlerImpl(options);
 };
